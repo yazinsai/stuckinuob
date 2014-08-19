@@ -31,8 +31,8 @@ class UOBSpider(Spider):
     relative_links = response.xpath('//a[contains(@target, "main")]/@href').extract()
     titles = response.css('a[target="main"]').xpath('text()').extract()
     codes = response.css('font[color="#000000"]').xpath("text()").extract()
-    count = 0
 
+    count = 0
     for link in relative_links:
       # Generate absolute link
       absolute_link = urlparse.urljoin(response.url, link)
@@ -44,10 +44,9 @@ class UOBSpider(Spider):
 
   def parse_section_list(self, response):
     # We're on the section page for the course (e.g. sections for ITCE202)
+    # Information in response.meta[]: 'uob_course_title', 'uob_course_code'
 
-    # print response.meta['uob_course_title']
-
-    # Extract course information (credits)
+    # Extract course credits from title (it's between brackets)
     course_credits_raw = response.xpath('//u//b/text()').extract()[0]
     course_credits = re.search(r'\((\d)\)', course_credits_raw).group(1)
 
@@ -59,13 +58,32 @@ class UOBSpider(Spider):
     exam_end = exam_row[3]
 
     # Save the course to the DB
+    course = {
+      'credits': course_credits,
+      'code': response.meta['uob_course_code'],
+      'title': response.meta['uob_course_title'],
+      'exam': {
+        'date': exam_date,
+        'start': exam_start,
+        'end': exam_end,
+      }
+    }
 
+    # Section information is temporarily stored in this list
+    sections = []
+    
     # Iterate through the sections
     for section in response.xpath('//p'):
       # Extract header information
       header = section.xpath('.//b/font[contains(@color, "#FF0000")]')
-      section  = header[0].xpath('text()').extract()
-      lecturer = header[1].xpath('text()').extract()
+      if len(header) > 0:
+        section  = header[0].xpath('text()').extract()
+        lecturer = header[1].xpath('text()').extract()
+        sections.append({ 
+          'section': section, 
+          'lecturer': lecturer,
+          'lectures': []
+          })
 
       # Would be great to extract lecture timings from here but the
       # HTML on the UoB site is malformed. The <p> tags are opened
@@ -73,16 +91,26 @@ class UOBSpider(Spider):
       # search by <table> :(
 
     # Extract lecture timings
+    section_index = 0
     for lectures in response.xpath('//table'):
-      # Extract the lecture information (excludes Header/Exam rows since we used 'text()')
-      lecture_rows = lectures.xpath('.//td/text()').extract()
-      i = 0
-      while i < len(lecture_rows):
-        # Take 4 at a time (day,start,end,room)
-        day = lecture_rows[i]
-        start_time = lecture_rows[i+1]
-        end_time = lecture_rows[i+2]
-        room = lecture_rows[i+3]
+      # Extract the lecture information - this excludes Header/Exam rows since 
+      # we used 'text()', and the header/exam fields fall within <font> tags
+      col = 0
+      lecture_cols = lectures.xpath('.//td/text()').extract()
+      while col < len(lecture_cols):
+        # Take 4 columns at a time (day, start, end, room)
+        # Store them in our sections list
+        sections[section_index]['lectures'].append({
+            'day': lecture_cols[col],
+            'start_time': lecture_cols[col+1],
+            'end_time': lecture_cols[col+2],
+            'room': lecture_cols[col+3] 
+          })
 
-        #Save the lecture to the DB: TODO
-        i += 4
+        # Increment columns pointer
+        col += 4
+
+      # Increment section
+      section_index += 1
+
+    # Save section details to the DB: TODO

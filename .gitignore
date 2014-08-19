@@ -26,3 +26,4 @@ config/secrets.yml
 
 # Virtualenv for Python
 venv/
+*.pyc
