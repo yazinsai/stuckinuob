@@ -45,8 +45,11 @@ class UOBSpider(Spider):
   def parse(self, response):
     # We get a list of course blocks (e.g. ACC, ITCE)
 
+    # We'll need a selector to parse the HTML
+    sel = Selector(response)
+
     # Extract the links (Careful: these are relative, not absolute)
-    relative_links = response.xpath('//a/@href').extract()
+    relative_links = sel.xpath('//a/@href').extract()
 
     for link in relative_links:
       # Generate absolute link
@@ -58,10 +61,13 @@ class UOBSpider(Spider):
   def parse_course_list(self, response):
     # We're on the course list page (e.g. for ITCE, we get ITCE101, ITCE102..)
 
+    # We'll need a selector for this response too
+    sel = Selector(response)
+
     # Extract the links, and course information
-    relative_links = response.xpath('//a[contains(@target, "main")]/@href').extract()
-    titles = response.css('a[target="main"]').xpath('text()').extract()
-    codes = response.css('font[color="#000000"]').xpath("text()").extract()
+    relative_links = sel.xpath('//a[contains(@target, "main")]/@href').extract()
+    titles = sel.css('a[target="main"]').xpath('text()').extract()
+    codes = sel.css('font[color="#000000"]').xpath("text()").extract()
 
     count = 0
     for link in relative_links:
@@ -77,13 +83,16 @@ class UOBSpider(Spider):
     # We're on the section page for the course (e.g. sections for ITCE202)
     # Information in response.meta[]: 'uob_course_title', 'uob_course_code'
 
+    # You guessed it .. another selector
+    sel = Selector(response)
+
     # Extract course credits from title (it's between brackets)
-    course_credits_raw = response.xpath('//u//b/text()').extract()[0]
+    course_credits_raw = sel.xpath('//u//b/text()').extract()[0]
     course_credits = re.search(r'\((\d)\)', course_credits_raw).group(1)
 
     # Extract exam timing for this lecture (from the first section)
     # Note: The exam timing is the same for all sections
-    exam_row = response.xpath('//table//td/font/text()').extract()
+    exam_row = sel.xpath('//table//td/font/text()').extract()
     if '00:00' == exam_row[1]:
       # There's no exam
       exam_date = exam_start = exam_end = 0
@@ -108,12 +117,14 @@ class UOBSpider(Spider):
     sections = []
     
     # Iterate through the sections
-    for section in response.xpath('//p'):
+    for section in sel.xpath('//p'):
       # Extract header information
       header = section.xpath('.//b/font[contains(@color, "#FF0000")]')
+
+      # Is it a header or just an empty tag?
       if len(header) > 0:
-        section  = header[0].xpath('text()').extract()
-        lecturer = header[1].xpath('text()').extract()
+        section  = header[0].xpath('text()').extract()[0]
+        lecturer = header[1].xpath('text()').extract()[0]
         sections.append({ 
           'section': section, 
           'lecturer': lecturer,
@@ -127,11 +138,11 @@ class UOBSpider(Spider):
 
     # Extract lecture timings
     section_index = 0
-    for lectures in response.xpath('//table'):
+    for lectures in sel.xpath('//table'):
       # Extract the lecture information - this excludes Header/Exam rows since 
       # we used 'text()', and the header/exam fields fall within <font> tags
-      col = 0
       lecture_cols = lectures.xpath('.//td/text()').extract()
+      col = 0
       while col < len(lecture_cols):
         # Take 4 columns at a time (day, start, end, room)
         # Store them in our sections list
@@ -141,26 +152,26 @@ class UOBSpider(Spider):
             'end_time': time_to_int(lecture_cols[col+2]),
             'room': lecture_cols[col+3] 
           })
-
         # Increment columns pointer
         col += 4
 
       # Increment section
       section_index += 1
 
-    # Iterate through the sections and save the details to the DB
+    # Iterate through the sections and save the details (section + lecture) to the DB
     for section in sections:
       # Save section details
+      print section['section'] # BUG: Why is this always '01'?
       self.cursor.execute('INSERT INTO sections(number, instructor, notes, course_id) VALUES(:number, :instructor, :notes, :course_id)', {
         'number': section['section'],
         'instructor': section['lecturer'],
         'notes': '', # TODO
-        'course_id': course_id
+        'course_id': course_id # BUG: Why's the course_id never repeated?
         })
       section_id = self.cursor.lastrowid
 
       # Iterate through the lectures and save the details
-      for lecture in section.lectures:
+      for lecture in section['lectures']:
         # Save lecture details
         self.cursor.execute('INSERT INTO lectures(days, start_time, end_time, rooms, section_id) VALUES(:days, :start_time, :end_time, :rooms, :section_id)', {
           'days': lecture['day'],
