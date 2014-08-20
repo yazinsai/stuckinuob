@@ -27,3 +27,4 @@ config/secrets.yml
 # Virtualenv for Python
 venv/
 *.pyc
+vendor/assets/bower_components/*
