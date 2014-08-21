@@ -7,6 +7,9 @@ import urlparse
 import os, sys, re
 import sqlite3
 
+# The path to the database that we're using
+DATABASE_PATH = "../../../../db/development.sqlite3"
+
 class UOBSpider(Spider):
   name = "uob"
   allowed_domains = ["uob.edu.bh"]
@@ -22,7 +25,7 @@ class UOBSpider(Spider):
 
   def spider_opened(self, spider):
     # Create our database
-    self.db = sqlite3.connect('python.db')
+    self.db = sqlite3.connect(DATABASE_PATH)
     self.cursor = self.db.cursor()
 
     # Create tables
