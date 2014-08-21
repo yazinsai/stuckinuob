@@ -34,7 +34,7 @@ class UOBSpider(Spider):
     CREATE TABLE sections (id INTEGER PRIMARY KEY, number TEXT, instructor TEXT, notes TEXT, course_id INT, created_at DATETIME, updated_at DATETIME);
 
     DROP TABLE IF EXISTS lectures;
-    CREATE TABLE lectures (id INTEGER PRIMARY KEY, start_time INT, end_time INT, room TEXT, section_id INT, created_at DATETIME, updated_at DATETIME);
+    CREATE TABLE lectures (id INTEGER PRIMARY KEY, days TEXT, start_time INT, end_time INT, room TEXT, section_id INT, created_at DATETIME, updated_at DATETIME);
     """)
 
   def spider_closed(self, spider):
@@ -88,18 +88,19 @@ class UOBSpider(Spider):
 
     # Extract course credits from title (it's between brackets)
     course_credits_raw = sel.xpath('//u//b/text()').extract()[0]
-    course_credits = re.search(r'\((\d)\)', course_credits_raw).group(1)
+    course_credits = re.search(r'\((\d*)\)', course_credits_raw).group(1)
 
     # Extract exam timing for this lecture (from the first section)
     # Note: The exam timing is the same for all sections
     exam_row = sel.xpath('//table//td/font/text()').extract()
-    if '00:00' == exam_row[1]:
-      # There's no exam
-      exam_date = exam_start = exam_end = 0
-    else:
+    if len(exam_row) >= 4 and exam_row[1] != '00:00':
+      # Got an exam
       exam_date = exam_row[1]
       exam_start = exam_row[2]
       exam_end = exam_row[3]
+    else:
+      # There's no exam
+      exam_date = exam_start = exam_end = 0
 
     # Save the course to the DB
     self.cursor.execute('INSERT INTO courses(code, title, prerequisites, credits, exam_date, exam_start, exam_end) VALUES(:code, :title, :prerequisites, :credits, :exam_date, :exam_start, :exam_end)', {
@@ -147,7 +148,7 @@ class UOBSpider(Spider):
         # Take 4 columns at a time (day, start, end, room)
         # Store them in our sections list
         sections[section_index]['lectures'].append({
-            'day': lecture_cols[col],
+            'days': lecture_cols[col],
             'start_time': time_to_int(lecture_cols[col+1]),
             'end_time': time_to_int(lecture_cols[col+2]),
             'room': lecture_cols[col+3] 
@@ -161,7 +162,6 @@ class UOBSpider(Spider):
     # Iterate through the sections and save the details (section + lecture) to the DB
     for section in sections:
       # Save section details
-      print section['section'] # BUG: Why is this always '01'?
       self.cursor.execute('INSERT INTO sections(number, instructor, notes, course_id) VALUES(:number, :instructor, :notes, :course_id)', {
         'number': section['section'],
         'instructor': section['lecturer'],
@@ -173,8 +173,8 @@ class UOBSpider(Spider):
       # Iterate through the lectures and save the details
       for lecture in section['lectures']:
         # Save lecture details
-        self.cursor.execute('INSERT INTO lectures(days, start_time, end_time, rooms, section_id) VALUES(:days, :start_time, :end_time, :rooms, :section_id)', {
-          'days': lecture['day'],
+        self.cursor.execute('INSERT INTO lectures(days, start_time, end_time, room, section_id) VALUES(:days, :start_time, :end_time, :room, :section_id)', {
+          'days': lecture['days'],
           'start_time': lecture['start_time'],
           'end_time': lecture['end_time'],
           'room': lecture['room'],
