@@ -3,7 +3,7 @@ h1 Welcome to Stuck in UoB
 p The schedule smasher below will help you make the perfect schedule.
 p Start by picking the courses you'd like to take:
 
-select name="course"
+select.chosen-select name="course"
   - @courses.each do |course|
     option = course.title
 

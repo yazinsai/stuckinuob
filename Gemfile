@@ -54,3 +54,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Add Slim support
 gem 'slim-rails'
+
+# Add chosen jquery lib for slick dropdown
+gem 'chosen-rails'
