@@ -3,8 +3,16 @@ h1 Welcome to Stuck in UoB
 p The schedule smasher below will help you make the perfect schedule.
 p Start by picking the courses you'd like to take:
 
-select.chosen-select name="course"
+select[name="course" multiple]
   - @courses.each do |course|
-    option = course.title
+    option = course.code << course.title
+
+javascript:
+  $(function() {
+    $('select').chosen({
+      no_results_text: 'No course found',
+      width: '350px'
+    });
+  });
 
 p We update the schedule with the UoB site directly every 6 hours, so you're always looking at the latest section information. No one likes a schedule checker that's stale! 👃
