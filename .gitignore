@@ -28,3 +28,6 @@ config/secrets.yml
 venv/
 *.pyc
 vendor/assets/bower_components/*
+
+# Vim stuff
+*.swp
