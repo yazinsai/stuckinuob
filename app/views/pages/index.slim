@@ -3,9 +3,10 @@ h1 Welcome to Stuck in UoB
 p The schedule smasher below will help you make the perfect schedule.
 p Start by picking the courses you'd like to take:
 
-select[name="course" multiple]
-  - @courses.each do |course|
-    option = course.code << course.title
+= form_tag({controller: "pages", action: "check"}, method: "get")
+  select[name="courses[]" multiple]
+    - @courses.each do |course|
+      option[value = course.id] = course.code << course.title
 
 javascript:
   $(function() {
