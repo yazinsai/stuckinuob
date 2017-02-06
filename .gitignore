@@ -31,3 +31,5 @@ vendor/assets/bower_components/*
 
 # Vim stuff
 *.swp
+
+use-grip-to-preview-readme
