@@ -7,14 +7,12 @@ class TimeTable
   end
 
   def add_section(section)
-    # If this is the first one, just add it without a fuss
-    if @sections.empty?
-      @sections << section
-      return
+    # does the section clash with any of the existing sections?
+    if @sections.any? && clash?(section)
+      raise(ArgumentError, "Section clashes with current timetable")
     end
 
-    # Check for clashes with existing sections
-    clash?(section)
+    @sections << section
   end
 
   def clash?(section)
