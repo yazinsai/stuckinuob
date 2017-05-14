@@ -10,12 +10,22 @@ one:
   exam_start: 500
   exam_end: 620
 
-two:
-  id: 2
-  code: COURSE2
+clash_with_one:
+  id: 100
+  code: CLASH1
   title: The second course ever
   prerequisites:
   credits: 4
   exam_date: 2017-01-19
   exam_start: 600
   exam_end: 720
+
+two:
+  id: 2
+  code: COURSE2
+  title: Course 2
+  prerequisites: 
+  credits: 3
+  exam_date: 2017-01-20
+  exam_start: 500
+  exam_end: 620

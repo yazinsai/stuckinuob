@@ -8,8 +8,10 @@ class SemesterSchedulerTest < ActiveSupport::TestCase
   end
 
   test "it checks the exam dates for clashes" do
-    s = SemesterScheduler.new([courses(:one).id, courses(:two).id])
-    assert_raises ArgumentError { s.start }
+    s = SemesterScheduler.new([courses(:one).id, courses(:clash_with_one).id])
+    assert_raises ArgumentError do
+      s.start
+    end
   end
 
 end

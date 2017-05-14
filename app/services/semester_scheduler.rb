@@ -16,9 +16,11 @@ class SemesterScheduler
     must_have_courses
     
     if exams_clash?
-      raise(ArgumentError,"The courses you picked clash on exam dates") if exams_clash?
+      raise(ArgumentError, "The courses you picked clash on exam dates") if exams_clash?
     end
   end
+
+  private
 
   def must_have_courses
     raise(ArgumentError, "No courses added") if @courses.empty?
@@ -26,7 +28,6 @@ class SemesterScheduler
 
   def exams_clash?
     # do the exams for the courses clash?
-    
     exams = {}
     @courses.each do |course|
       exams[course.exam_date] ||= []
@@ -36,8 +37,8 @@ class SemesterScheduler
     end
 
     # iterate over the exam dates
-    exams.keys.each |date|
-      date.combination(2).each do |a, b|
+    exams.keys.each do |date|
+      exams[date].combination(2).each do |a, b|
         return true if a.clash? b
       end
     end
