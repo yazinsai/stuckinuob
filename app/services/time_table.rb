@@ -13,7 +13,6 @@ class TimeTable
       return
     end
 
-    # Not first section. 
     # Check for clashes with existing sections
     clash?(section)
   end

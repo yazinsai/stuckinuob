@@ -14,6 +14,6 @@ class Section < ApplicationRecord
 
   def clash?(section)
     # does this section clash with the section passed?
-    @timeline.clash? section.to_timeline
+    to_timeline.clash? section.to_timeline
   end
 end

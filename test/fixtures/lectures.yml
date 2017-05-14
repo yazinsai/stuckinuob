@@ -1,15 +1,32 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  days: MyString
-  start_time: 1
-  end_time: 1
-  room: MyString
+# COURSE1/1
+one_a:
+  days: UTH
+  start_time: 540
+  end_time: 590
+  room: 14-124
   section_id: 1
 
-two:
-  days: MyString
-  start_time: 1
-  end_time: 1
-  room: MyString
+one_b:
+  days: M
+  start_time: 540
+  end_time: 590
+  room: 
   section_id: 1
+
+# COURSE1/2
+two:
+  days: UTH
+  start_time: 600
+  end_time: 650
+  room: 19-011
+  section_id: 2
+
+# COURSE2/1 (clashes with COURSE1/1)
+three_a:
+  days: UTH
+  start_time: 540
+  end_time: 590
+  room: 1-019
+  section_id: 3

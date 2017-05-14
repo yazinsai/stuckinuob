@@ -1,13 +1,26 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+# COURSE1/1
 one:
-  number: MyString
-  instructor: MyString
-  notes: MyString
+  id: 1
+  number: 1
+  instructor: Dr. Ahmed Almulla
+  notes: 
   course_id: 1
 
+# COURSE1/2
 two:
-  number: MyString
-  instructor: MyString
-  notes: MyString
+  id: 2
+  number: 2
+  instructor: Dr. Riyadh Aljuma
+  notes: 
   course_id: 1
+
+# COURSE2/1
+three:
+  id: 3
+  number: 1
+  instructor: Dr.Ahmed Mohamad
+  notes:
+  course_id: 2
+

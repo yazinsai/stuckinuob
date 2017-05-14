@@ -1,5 +1,4 @@
 # Basic timeline class, essentially a 2 dimensional array
-# Does NOT perform high level functions like clash detection, etc.
 class Timeline
 
   def initialize(params = nil)

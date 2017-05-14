@@ -1,6 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: 1
   code: MyString
   title: MyString
   prerequisites: MyString
@@ -10,6 +11,7 @@ one:
   exam_end: 1
 
 two:
+  id: 2
   code: MyString
   title: MyString
   prerequisites: MyString
