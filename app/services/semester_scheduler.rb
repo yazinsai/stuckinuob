@@ -2,7 +2,7 @@
 # based on the list of courses selected
 
 # We compare groups instead of sections to avoid cost of repetition
-Group = Struct.new :timeline, :sections
+Group = Struct.new :course_id, :timeline, :sections
 
 class SemesterScheduler
   def initialize(course_ids)
@@ -83,7 +83,7 @@ class SemesterScheduler
       groups[course.id] ||= []
       timelines.each do |timeline, sections|
         groups[course.id] << 
-          Group.new(Timeline.new(timeline), sections)
+          Group.new(course.id, Timeline.new(timeline), sections)
       end
     end
 

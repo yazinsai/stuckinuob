@@ -1,0 +1,13 @@
+h1 Here are your results
+
+p Below, you'll see a dump of all of the non-clashing combinations of the subjects you selected. Have fun!
+
+div.body
+  - @results.each do |result|
+    h3 Result
+    div.result
+    - result.each do |group|
+      div.group
+        .course = @courses[group.course_id][:code]
+        .timeline = group.timeline.to_a.inspect
+        .sections = group.sections
