@@ -24,3 +24,17 @@ three:
   notes:
   course_id: 3
 
+# COURSER/1
+repeat_first:
+  id: 4
+  number: 1
+  instructor: Dr.James Altucher
+  notes:
+  course_id: 4
+
+repeat_second:
+  id: 5
+  number: 2
+  instructor: Dr.Phillip Morris
+  notes:
+  course_id: 4

@@ -29,3 +29,12 @@ two:
   exam_date: 2017-01-20
   exam_start: 500
   exam_end: 620
+
+repeated_sections:
+  id: 4
+  code: COURSER
+  title: Course with repeated sections
+  credits: 1
+  exam_date: 2017-01-11
+  exam_start: 500
+  exam_end: 600

@@ -30,3 +30,19 @@ three_a:
   end_time: 590
   room: 1-019
   section_id: 3
+
+# COURSER/1
+repeat_a:
+  days: UTH
+  start_time: 540
+  end_time: 590
+  room: 1-234
+  section_id: 4
+
+repeat_b:
+  days: UTH
+  start_time: 540
+  end_time: 590
+  room: 1-235
+  section_id: 5
+

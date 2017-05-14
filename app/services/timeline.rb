@@ -8,19 +8,28 @@ class Timeline
   end
 
   def add(time)
-    # Expects:
-    #   - single slot (e.g. 1 dimensional array [900, 950])
-    #   - Timeline
+    # Adds the timeslot to itself. expects either:
+    # - single slot (e.g. 1 dimensional array [900, 950])
+    # - a Timeline object
     if time.is_a? Timeline
       arr = time.to_a
       arr.length.times do |i|
         @timeline << arr[i]
       end
     else
-      @timeline << time
+      # single dimensional array or 2D?
+      if time.all? {|e| e.class == Array}
+        # 2D: [[100, 150], [200, 250]...]
+        time.each do |from, to|
+          @timeline << [from, to]
+        end
+      else
+        # 1D: [100, 150]
+        @timeline << time
+      end
     end
 
-    @timeline
+    @timeline.sort!
   end
 
   def inspect
@@ -35,9 +44,14 @@ class Timeline
     @timeline.dup
   end
 
+  def ==(other)
+    # used to determine if two timelines are the same
+    @timeline == other.to_a
+  end
+
   def clash?(other)
     # does the timeline passed clash with this one?
-    a = self.to_a.sort
+    a = self.to_a # already sorted
     b = other.to_a.sort!
 
     # iterate
@@ -49,6 +63,12 @@ class Timeline
     end
 
     false # no clash
+  end
+
+  def hash
+    # generates a hash from the timeline slots such that two timelines
+    # with the same slots would share the same fingerprint
+    @timeline.hash
   end
 
   private
