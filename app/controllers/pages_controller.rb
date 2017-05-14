@@ -13,9 +13,9 @@ class PagesController < ApplicationController
 
     # Find non-clashing timetables for selected courses
     scheduler = SemesterScheduler.new(course_ids)
-    scheduler.start
+    render plain: scheduler.start.inspect
 
     # Done
-    render plain: "works!"
+    # render plain: "works!"
   end
 end

@@ -32,8 +32,10 @@ class SemesterScheduler
     # }
     groups = group_similar_sections
 
-    # iterate over groups
+    # iterate over groups, and store results in @timetables
     find_timetables(groups)
+
+    @timetables
   end
 
   # private
@@ -91,11 +93,12 @@ class SemesterScheduler
   def find_timetables(groups_by_course)
     @timetables = []
     depth_first_search(groups_by_course, [])
+    @timetables
   end
 
   def depth_first_search(groups_by_course, path = [])
-    # recursively iterates over all of the courses and in the groups and returns the
-    # timetables that don't clash (as an array of an array of timelines)
+    # recursively traverses all of the courses's groups and updates the
+    # @timetables that don't clash (as an array of an array of timelines)
     # @path = array of Timelines
     if groups_by_course.empty?
       @timetables << path
@@ -104,25 +107,20 @@ class SemesterScheduler
 
     # top -> bottom
     # pick the first course and iterate over all timelines in that course
-
     first = groups_by_course.keys.first
     groups_by_course[first].each do |group|
-      group.each do |timeline|
-        # does this timeline clash with our current path?
-        clash = false
-        path.each do |step|
-          if step.clash? timeline
-            clash = true
-            break
-          end
+      # does this timeline clash with our current path?
+      clash = false
+      path.each do |step|
+        if step.clash? group.timeline
+          clash = true
+          break
         end
-        next if clash
-
-        # go deeper
-        depth_first_search(groups_by_course.except(first), path + [timeline])
       end
+      next if clash
+
+      # go deeper
+      depth_first_search(groups_by_course.except(first), path + [group.timeline])
     end
-    
-    @timetables
   end
 end
