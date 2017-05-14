@@ -13,8 +13,9 @@ class Timeline
     #   - single slot (e.g. 1 dimensional array [900, 950])
     #   - Timeline
     if time.is_a? Timeline
-      for i in 1..time.size
-        @timeline << time.get(i-1)
+      arr = time.to_a
+      arr.length.times do |i|
+        @timeline << arr[i]
       end
     else
       @timeline << time
@@ -27,17 +28,34 @@ class Timeline
     "Timeline: #{@timeline}"
   end
 
-  def get(index = nil)
-    if index.nil?
-      @timeline
-    else
-      @timeline[index]
-    end
+  def [](key = nil)
+    @timeline[key]
   end
 
-  def size
-    @timeline.size
+  def to_a
+    @timeline.dup
+  end
+
+  def clash?(other)
+    # does the timeline passed clash with this one?
+    a = self.to_a.sort
+    b = other.to_a.sort!
+
+    # iterate
+    while !a.empty? && !b.empty? do
+      return true if range_overlap?(a[0], b[0])
+
+      # remove earlier element
+      a[0][0] < b[0][0] ? a.shift : b.shift
+    end
+
+    false # no clash
   end
 
   private
+
+  def range_overlap?(a, b)
+    # do two ranges overlap? e.g. range_overlap?([100, 150], [200, 250]) => false
+    !(a.first > b.last || a.last < b.first)
+  end
 end

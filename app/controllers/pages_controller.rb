@@ -8,11 +8,14 @@ class PagesController < ApplicationController
     # Make sure we've got at least the courses specified
     params.require(:courses)
     course_ids = params[:courses]
+    
+    # TODO: Validate course_ids
 
     # Start a check
-    checker = CheckService.new({ courses: course_ids })
+    checker = CheckService.new(course_ids)
+    checker.start
 
     # Done
-    render text: "works!"
+    render plain: "works!"
   end
 end
