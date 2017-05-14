@@ -39,7 +39,7 @@ class SemesterScheduler
   end
 
   # private
-
+  # should be private, but I have tests that require this to be public
   def must_have_courses
     raise(ArgumentError, "No courses added") if @courses.empty?
   end
@@ -98,8 +98,7 @@ class SemesterScheduler
 
   def depth_first_search(groups_by_course, path = [])
     # recursively traverses all of the courses's groups and updates the
-    # @timetables that don't clash (as an array of an array of timelines)
-    # @path = array of Timelines
+    # @timetables that don't clash (as an array of an array of Groups)
     if groups_by_course.empty?
       @timetables << path
       return
@@ -112,7 +111,7 @@ class SemesterScheduler
       # does this timeline clash with our current path?
       clash = false
       path.each do |step|
-        if step.clash? group.timeline
+        if step.timeline.clash? group.timeline
           clash = true
           break
         end
@@ -120,7 +119,7 @@ class SemesterScheduler
       next if clash
 
       # go deeper
-      depth_first_search(groups_by_course.except(first), path + [group.timeline])
+      depth_first_search(groups_by_course.except(first), path + [group])
     end
   end
 end
