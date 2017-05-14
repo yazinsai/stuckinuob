@@ -2,20 +2,20 @@
 
 one:
   id: 1
-  code: MyString
-  title: MyString
-  prerequisites: MyString
-  credits: 1
+  code: COURSE1
+  title: The first course ever
+  prerequisites:
+  credits: 3
   exam_date: 2017-01-19
-  exam_start: 1
-  exam_end: 1
+  exam_start: 500
+  exam_end: 620
 
 two:
   id: 2
-  code: MyString
-  title: MyString
-  prerequisites: MyString
-  credits: 1
+  code: COURSE2
+  title: The second course ever
+  prerequisites:
+  credits: 4
   exam_date: 2017-01-19
-  exam_start: 1
-  exam_end: 1
+  exam_start: 600
+  exam_end: 720

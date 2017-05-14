@@ -11,9 +11,9 @@ class PagesController < ApplicationController
     
     # TODO: Validate course_ids
 
-    # Start a check
-    checker = CheckService.new(course_ids)
-    checker.start
+    # Find non-clashing timetables for selected courses
+    scheduler = SemesterScheduler.new(course_ids)
+    scheduler.start
 
     # Done
     render plain: "works!"
